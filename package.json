@@ -1,7 +1,7 @@
 {
-  "name": "child-template",
+  "name": "fix-multi-select-questions",
   "version": "1.0.0",
-  "description": "Put your child module's description here",
+  "description": "Post-import child module for the D2l conversion tool. Goes through the converted Canvas course and fixes the multi-select questions that were converted to multiple choice questions.",
   "main": "main.js",
   "dependencies": {
     "canvas-wrapper": "github:byuitechops/canvas-wrapper"
@@ -18,13 +18,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/byuitechops/child-template.git"
+    "url": "git+https://github.com/byuitechops/fix-multi-select-questions.git"
   },
-  "author": "Zachary Williams, Daniel Green",
+  "author": "Cal Wilson",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/byuitechops/child-template/issues"
   },
-  "homepage": "https://github.com/byuitechops/child-template#readme",
+  "homepage": "https://github.com/byuitechops/fix-multi-select-questions#readme",
   "childType": "postImport"
 }

@@ -1,27 +1,39 @@
-# Child Template
-### *Package Name*: child-template
+# Fix Multi-Select Questions
+### *Package Name*: fix-multi-select-questions
+### *Child Type*: Post-import
+### *Platform*: All
+### *Required*: Required
+
+This child module is built to be used by the Brigham Young University - Idaho D2L to Canvas Conversion Tool. It utilizes the standard `module.exports => (course, stepCallback)` signature and uses the Conversion Tool's standard logging functions. You can view extended documentation [Here](https://github.com/byuitechops/d2l-to-canvas-conversion-tool/tree/master/documentation).
 
 ## Purpose
-This is the boilerplate for a child-module in the [d2l-to-canvas-conversion-tool](https://github.com/byuitechops/d2l-to-canvas-conversion-tool). Use this template when creating a new child module.
 
-## Setup
+When a multi-select question in Brightspace/D2L has only one correct answer, the Canvas Import Tool converts this type of question into a multiple choice question. This child module goes through the imported Canvas course and fixes the multi-select questions that were converted to multiple choice questions.
 
-When creating a new child module from this template **DO NOT CLONE** this repository (Download it instead). This just helps make sure we don't overwrite this template repository.
+## How to Install
 
-These are the steps to turn this boilerplate into your very own child module:
-1. Download this repository (**DO NOT CLONE** - we don't want you to overwrite this boilerplate).
-2. Extract and rename repository.
-    -  Name your repository what action it performs & what item it affects.
-3. Create a new git repository on GitHub.
-4. Initialize a new git repository locally & connect it to GitHub.
-5. Update package.json
-    - The following fields need to be updated: 
-        - name
-        - description
-        - `repository.url`
-        - author
-        - `bugs.url`
-        - homepage
-        -childType
-6. Fill out `readme template.md` and rename it `README.md` (replace this readme)
-5. Use `main.js` to start Coding! 😄
+```
+npm install fix-multi-select-questions
+```
+
+## Run Requirements
+
+This child module must be run with any other quiz related child modules.
+
+## Process
+
+Describe in steps how the module accomplishes its goals.
+
+1. Does this thing
+2. Does that thing
+3. Does that other thing
+
+## Log Categories
+
+List the categories used in logging data in your module.
+
+- Multi-select Question Fixed
+
+## Requirements
+
+* The child module shall fix all incorrectly converted multi-select questions.
