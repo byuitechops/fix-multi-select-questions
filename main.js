@@ -6,19 +6,43 @@
 
 /* Include this line only if you are going to use Canvas API */
 // const canvas = require('canvas-wrapper');
-
+const xpath = require('xpath'),
+    dom = require('xmldom').DOMParser;
 
 module.exports = (course, stepCallback) => {
+    function getXML(files) {
+        return files.map(file => {
+            return file.dom.xml();
+        });
+    }
+
+    function getLabels(xmlData) {
+        let nodesData = xmlData.map(xml => {
+            let doc = new dom().parseFromString(xml);
+            return xpath.select('//fieldlabel[text()="qmd_questiontype"]/../fieldentry[text()="Multi-Select"]/../../../../@label', doc);
+        });
+        nodesData = nodesData.filter(nodes => nodes.length > 0);
+        return nodesData.map(nodes => {
+            return nodes.map(node => {
+                return node.value;
+            });
+        });
+    }
+
+    // Start Here
     try {
-
-        // Remeber to include AT LEAST ONE course.log in your child module
-        course.log('Table description', {column: 'value'});
-    
-        /* You should never call the stepCallback with an error. We want the
-        whole program to run when testing so we can catch all existing errors */
-        stepCallback(null, course);
-
-    } catch(err) {
+        let files = course.content.filter(file => /^quiz_d2l/.test(file.name) || /^questiondb/.test(file.name));
+        let xmlData = getXML(files);
+        let questionLabels = getLabels(xmlData);
+        if (questionLabels.length > 0) {
+            // TODO: Compare D2l and Canvas Questions
+        } else {
+            course.log('fix-multi-select-questions', {
+                status: 'No multi-select questions found'
+            });
+            stepCallback(null, course);
+        }
+    } catch (err) {
         // catch all uncaught errors. Don't pass errors here on purpose
         course.error(err);
         stepCallback(null, course);
