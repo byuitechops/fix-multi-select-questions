@@ -2,9 +2,6 @@
 
 /* Module Description */
 
-/* Put dependencies here */
-
-/* Include this line only if you are going to use Canvas API */
 const canvas = require('canvas-api-wrapper');
 const cheerio = require('cheerio');
 const xpath = require('xpath'),
@@ -13,12 +10,28 @@ const xpath = require('xpath'),
 module.exports = (course, stepCallback) => {
     let xpathQuizTitleSelector = '//assessment/@title';
     let xpathQuestionTextSelector = '//fieldlabel[text()="qmd_questiontype"]/../fieldentry[text()="Multi-Select"]/../../../../presentation/flow/material/mattext';
-    let xpathQuestionTitleSelector = '//fieldlabel[text()="qmd_questiontype"]/../fieldentry[text()="Multi-Select"]/../../../../@title';
 
     function getXML(files) {
         return files.map(file => {
             return file.dom.xml();
         });
+    }
+
+    function getQuestionTitle(question) {
+        let attrLength = question.attributes.length;
+        if (question.nodeName === 'item') {
+            for (let i = 0; i < attrLength; i++) {
+                if (question.attributes[`${i}`].name === 'title') {
+                    return question.attributes[`${i}`].nodeValue;
+                }
+            }
+            return 'N/A';
+        }
+        if (question.parentNode !== undefined) {
+            return getQuestionTitle(question.parentNode);
+        } else {
+            return 'N/A';
+        }
     }
 
     function getQuestionObjects(xmlFiles) {
@@ -33,16 +46,10 @@ module.exports = (course, stepCallback) => {
                 quizTitle = quizTitle[0].value;
             }
             quizQuestionsText.forEach(quizQuestion => {
-                if (quizQuestion.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.attributes['1'] === undefined) {
-                    console.log(quizTitle);
-                    console.log(quizQuestion.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.attributes['1']);
-                } else {
-                    console.log(quizQuestion.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.attributes['1'].nodeValue);
-                }
-
+                let questionTitle = getQuestionTitle(quizQuestion);
                 bsObjects.push({
                     quizTitle: quizTitle,
-                    questionTitle: '',
+                    questionTitle: questionTitle,
                     questionText: quizQuestion.childNodes['0'].data
                 });
             });
@@ -61,6 +68,10 @@ module.exports = (course, stepCallback) => {
         return bsQuizTitle.toLowerCase() === cQuizTitle.toLowerCase();
     }
 
+    function checkQuestionsTitles(bsQuestionTitle, cQuestionTitle) {
+        return bsQuestionTitle === cQuestionTitle;
+    }
+
     function checkQuestionText(bsQuestionText, cQuestionText) {
         let $ = cheerio.load(bsQuestionText);
         bsQuestionText = $(bsQuestionText).text();
@@ -74,11 +85,20 @@ module.exports = (course, stepCallback) => {
         cQuizObjects.forEach(cQuizObject => {
             let cQuizTitle = cQuizObject.quizTitle;
             cQuizObject.mcQuestions.forEach(mcQuestion => {
-                let cQuestionText = mcQuestion.question_text.toLowerCase();
+                let cQuestionTitle = mcQuestion.question_name;
+                let cQuestionText = mcQuestion.question_text;
                 bsQuizObjects.forEach(bsQuizObject => {
                     if (checkQuizTitles(bsQuizObject.quizTitle, cQuizTitle)) {
-                        if (checkQuestionText(bsQuizObject.questionText, cQuestionText)) {
-                            badQuestions.push(mcQuestion);
+                        if (bsQuizObject.questionTitle !== 'N/A') {
+                            if (checkQuestionsTitles(bsQuizObject.questionTitle, cQuestionTitle)) {
+                                if (checkQuestionText(bsQuizObject.questionText, cQuestionText)) {
+                                    badQuestions.push(mcQuestion);
+                                }
+                            }
+                        } else {
+                            if (checkQuestionText(bsQuizObject.questionText, cQuestionText)) {
+                                badQuestions.push(mcQuestion);
+                            }
                         }
                     }
                 });
@@ -106,8 +126,7 @@ module.exports = (course, stepCallback) => {
                 });
                 mcQuestionObjects = mcQuestionObjects.filter(mcQuestionObject => mcQuestionObject.mcQuestions.length > 0);
                 let badQuestions = compareQuestions(questionObjects, mcQuestionObjects);
-
-                //console.log(badQuestions);
+                console.log(badQuestions);
             }, (err) => {
                 course.error(err);
             });
