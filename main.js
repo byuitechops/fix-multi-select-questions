@@ -217,7 +217,12 @@ module.exports = (course, stepCallback) => {
      * cQuizObjects: Array[Object]
      * 
      * Description:
-     * 
+     * The compareQuestionTitles() function recieves
+     * Brightspace and Canvas quiz objects to compare.
+     * It then calls the necessary functions to compare
+     * the quiz titles, question titles, and question
+     * text against one another. If a match is found the
+     * match is added to the badQuestions array.
      * 
      * Return Type: Array[Object]
      * 
@@ -261,16 +266,23 @@ module.exports = (course, stepCallback) => {
         return badQuestions;
     }
 
-    /********************************************
-     *                  getXML()
+    /****************************************************
+     *                 fixBadQuestions()
      * 
-     * Parameters:
+     * Parameters: courseID: String, 
+     * badQuestions: Array[Object]
      * 
      * Description:
+     * The fixBadQuestions() function recieves a courseID
+     * and a list of questions to be fixed. The function
+     * makes a put request to the specific function that
+     * changes the question type from multiple choice
+     * to multiple answers. It pushes the response onto
+     * the fixedQuestions array.
      * 
-     * Return Type:
+     * Return Type: Array[Object]
      * 
-     ********************************************/
+     ****************************************************/
     async function fixBadQuestions(courseID, badQuestions) {
         // Create an array that will hold the fixed questions
         let fixedQuestions = [];
@@ -291,16 +303,21 @@ module.exports = (course, stepCallback) => {
         return fixedQuestions;
     }
 
-    /********************************************
-     *                printResult()
+    /****************************************************
+     *                 printResult()
      * 
-     * Parameters:
+     * Parameters: fixedQuestions: Array[Object]
      * 
      * Description:
+     * The printResult() function recieves a list of
+     * fixed questions. If the list of fixed questions
+     * contains at least one question it will log
+     * success. Otherwise, the function will log that
+     * there was a problem fixing the questions.
      * 
-     * Return Type:
+     * Return Type: null
      * 
-     ********************************************/
+     ****************************************************/
     function printResult(fixedQuestions) {
         // Check if any fixed questions were returned
         if (fixedQuestions.length > 0) {
@@ -318,16 +335,22 @@ module.exports = (course, stepCallback) => {
         stepCallback(null, course);
     }
 
-    /********************************************
-     *                  getXML()
+    /****************************************************
+     *                runQuestionTasks()
      * 
-     * Parameters:
+     * Parameters: questionObjects: Array[Object], 
+     * courseQuizzes: Array[Object]
      * 
      * Description:
+     * The runQuestionTasks function recieves a list of
+     * question objects and a list of the course's 
+     * quizzes. The function runs all of the necessary
+     * synchronous and asynchronous tasks to compare and
+     * fix all of the bad multiple choice questions.
      * 
-     * Return Type:
+     * Return Type: null
      * 
-     ********************************************/
+     ****************************************************/
     function runQuestionTasks(questionObjects, courseQuizzes) {
         // Remove all quizzes that don't have any questions attached to them
         courseQuizzes = courseQuizzes.filter(quiz => {
