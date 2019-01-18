@@ -4,7 +4,9 @@
   "description": "Post-import child module for the D2l conversion tool. Goes through the converted Canvas course and fixes the multi-select questions that were converted to multiple choice questions.",
   "main": "main.js",
   "dependencies": {
-    "canvas-wrapper": "github:byuitechops/canvas-wrapper"
+    "canvas-api-wrapper": "github:byuitechops/canvas-api-wrapper",
+    "xmldom": "^0.1.27",
+    "xpath": "0.0.27"
   },
   "devDependencies": {
     "async": "^2.6.0",
